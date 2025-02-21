@@ -1,51 +1,55 @@
-const { Sequelize, DataTypes } = require("sequelize");
 const express = require("express");
-const { engine } = require("express-handlebars"); 
-const bodyParser = require("body-parser"); 
+const { engine } = require("express-handlebars");
+const bodyParser = require("body-parser");
 const app = express();
-
+const Post = require('./models/Post'); // Importando o modelo de postagens
 
 // Configuração do Handlebars como Template Engine
 app.engine("handlebars", engine({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
-//body Parser
 
-app.use(bodyParser.urlencoded({extended: false}))
-app.use(bodyParser.json())
+// Configuração do body-parser para processar os dados do formulário
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-
-// Configuração do Sequelize
-const sequelize = new Sequelize("test", "root", "", {
-    host: "localhost",
-    dialect: "mysql",
-    logging: false, // Desativa logs SQL no console (opcional)
+// Rota para renderizar o formulário
+app.get('/post', (req, res) => {
+    res.render('formulario');
 });
 
-// Testando a conexão
-sequelize
-    .authenticate()
+// Rota para criar a postagem
+app.post('/criarPostagem', (req, res) => {
+    const { titulo, conteudo } = req.body; // Pega os dados do formulário
+
+    // Criando o novo post no banco de dados
+    Post.create({
+        titulo: titulo,
+        conteudo: conteudo
+    })
     .then(() => {
-        console.log("✅ Conexão bem-sucedida com o banco de dados!");
+        res.redirect('/'); // Redireciona para a página inicial após criar a postagem
     })
     .catch((error) => {
-        console.error("❌ Erro ao conectar ao banco de dados:", error);
+        res.status(500).send('Erro ao criar postagem: ' + error);
     });
+});
 
-
-
-
-    app.get('/post', (req, res) =>{
-        res.render('formulario')
-    })
-    app.post('/criarPostagem', (req, res) =>{
-        res.send('Texto :'+req.body.titulo+" "+"Conteudo :"+req.body.conteudo)
-    })
 // Definir onde estão os arquivos de views
 app.set("views", "./views");
 
-// Criar uma rota para renderizar uma página usando Handlebars
+// Rota para renderizar a página inicial e mostrar as postagens
 app.get("/", (req, res) => {
-    res.render("home", { mensagem: "Bem-vindo ao Handlebars!" });
+    // Buscando todas as postagens do banco de dados
+    Post.findAll()
+        .then((posts) => {
+            res.render("home", { 
+                mensagem: "Bem-vindo ao Handlebars!",
+                posts: posts.map(post => post.toJSON()) // Garantindo que as postagens sejam convertidas em um formato adequado para o Handlebars
+            });
+        })
+        .catch((error) => {
+            res.status(500).send('Erro ao carregar as postagens: ' + error);
+        });
 });
 
 // Iniciar o servidor na porta 8081

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Postagens</title>
+</head>
+<body>
+    <h1>{{mensagem}}</h1>
+    <h2>Lista de Postagens</h2>
+
+    <ul>
+        {{#each posts}}
+        <li>
+            <h3>{{titulo}}</h3>
+            <p>{{conteudo}}</p>
+        </li>
+        {{else}}
+        <p>Não há postagens ainda.</p>
+        {{/each}}
+    </ul>
+
+    <a href="/post">Criar nova postagem</a>
+</body>
+</html>
