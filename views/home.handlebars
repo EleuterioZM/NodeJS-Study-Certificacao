@@ -14,6 +14,11 @@
         <li>
             <h3>{{titulo}}</h3>
             <p>{{conteudo}}</p>
+            
+            <!-- Formulário para excluir postagem -->
+            <form action="/excluirPostagem/{{id}}" method="POST" style="display:inline;">   
+                <button type="submit">Excluir</button>
+            </form>
         </li>
         {{else}}
         <p>Não há postagens ainda.</p>

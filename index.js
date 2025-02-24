@@ -52,7 +52,23 @@ app.get("/", (req, res) => {
         });
 });
 
-// Iniciar o servidor na porta 8081
+// Rota para excluir uma postagem
+app.post('/excluirPostagem/:id', (req, res) => {
+    const { id } = req.params; // Pega o ID da postagem a ser excluída
+
+    // Encontra a postagem no banco de dados e a exclui
+    Post.destroy({
+        where: { id: id }
+    })
+    .then(() => {
+        res.redirect('/'); // Redireciona para a página inicial após excluir a postagem
+    })
+    .catch((error) => {
+        res.status(500).send('Erro ao excluir postagem: ' + error);
+    }); 
+});             
+
+// Iniciar o servidor na porta 8081 
 app.listen(8081, () => {
     console.log("Servidor rodando na URL http://localhost:8081");
 });
